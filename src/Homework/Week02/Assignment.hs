@@ -43,8 +43,20 @@ build l = foldl (\acc m -> insert m acc) Leaf l
 
 -- #4
 inOrder :: MessageTree -> [LogMessage]
-inOrder = undefined
+inOrder Leaf = []
+inOrder (Node l root r) = (inOrder l) ++ [root] ++ (inOrder r)
 
 -- #5
 whatWentWrong :: [LogMessage] -> [String]
-whatWentWrong = undefined
+whatWentWrong messages =
+    let sortedMessages = (inOrder . build) messages
+    in map logMessageString (filter isSevere sortedMessages)
+
+isSevere :: LogMessage -> Bool
+isSevere (LogMessage (Error s) _ _)
+    | s >= 50 = True
+    | otherwise = False
+isSevere _ = False
+
+logMessageString :: LogMessage -> String
+logMessageString (LogMessage _ _ str) = str
