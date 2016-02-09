@@ -110,4 +110,4 @@ firstLetters = mapMaybe safeHead
 
 -- #17
 asList :: [String] -> String
-asList xs = concat $ ["["] ++ (intersperse ", " xs) ++ ["]"]
+asList xs = concat $ ["["] ++ (intersperse "," xs) ++ ["]"]
