@@ -26,7 +26,11 @@ import qualified Data.Text.IO as T
 
 -- #1
 ynToBool :: Value -> Value
-ynToBool = undefined
+ynToBool (String "Y") = Bool True
+ynToBool (String "N") = Bool False
+ynToBool (Array a) = Array (fmap ynToBool a)
+ynToBool (Object a) = Object (fmap ynToBool a)
+ynToBool x = x
 
 -- #2
 parseData :: B.ByteString -> Either String Value
