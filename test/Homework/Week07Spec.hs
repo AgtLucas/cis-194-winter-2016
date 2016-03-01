@@ -76,11 +76,9 @@ spec = do
 
   describe "parseData" $ do
     it "returns an error for malformed JSON" $ do
-      pending
       parseData (B.pack "{") `shouldBe` Left "not enough input"
 
     it "parses JSON strings, replacing Y/N with booleans" $ do
-      pending
       parseData (B.pack "\"Y\"") `shouldBe` Right (toJSON True)
       parseData (B.pack "\"N\"") `shouldBe` Right (toJSON False)
       parseData (B.pack "[1, 2, 3]")
@@ -90,11 +88,9 @@ spec = do
 
   describe "parseMarkets" $ do
     it "returns an error for malformed JSON" $ do
-      pending
       parseMarkets (B.pack "{") `shouldBe` Left "not enough input"
 
     it "parses JSON strings to Markets" $ do
-      pending
       let markets = parseMarkets $ marketsJSON [("A", "B", 1, 2)]
       length markets `shouldBe` 1
       let (Right [market]) = markets
@@ -104,7 +100,6 @@ spec = do
       y market `shouldBe` 2
 
     it "produces one market per element in the JSON" $ do
-      pending
       let (Right markets) = parseMarkets $ marketsJSON [ ("A", "B", 1, 2)
                                                        , ("C", "D", 3, 4) ]
       length markets `shouldBe` 2
@@ -112,12 +107,10 @@ spec = do
   describe "Monoid OrdList" $ do
     describe "mempty" $ do
       it "is the empty list" $ do
-        pending
         mempty `shouldBe` OrdList ([] :: [Integer])
 
     describe "mappend" $ do
       it "preserves order in the result" $ do
-        pending
         (OrdList [1, 2, 3] `mappend` OrdList [4, 5, 6])
           `shouldBe` OrdList ([1, 2, 3, 4, 5, 6] :: [Integer])
         (OrdList [4, 5, 6] `mappend` OrdList [1, 2, 3])
@@ -137,7 +130,6 @@ spec = do
 
   describe "search" $ do
     it "returns the found markets compounded in the given monoid" $ do
-      pending
       let productFound txt = getProduct . search (Product . const 2) txt
       let (Right markets) = parseMarkets searchableJSON
       productFound (T.pack "oo") markets `shouldBe` (4 :: Integer)
@@ -146,7 +138,6 @@ spec = do
 
   describe "firstFound" $ do
     it "returns the first market found" $ do
-      pending
       let (Right markets) = parseMarkets searchableJSON
       fromJust (firstFound (T.pack "oo") markets) `shouldBeNamed` "Foo"
       fromJust (firstFound (T.pack "ar") markets) `shouldBeNamed` "Bar"
@@ -154,7 +145,6 @@ spec = do
 
   describe "lastFound" $ do
     it "returns the last market found" $ do
-      pending
       let (Right markets) = parseMarkets searchableJSON
       fromJust (lastFound (T.pack "oo") markets) `shouldBeNamed` "FooBar"
       fromJust (lastFound (T.pack "ar") markets) `shouldBeNamed` "FooBar"
@@ -162,7 +152,6 @@ spec = do
 
   describe "allFound" $ do
     it "returns all markets found" $ do
-      pending
       let (Right markets) = parseMarkets searchableJSON
       length (allFound (T.pack "oo") markets) `shouldBe` 2
       length (allFound (T.pack "ar") markets) `shouldBe` 2
@@ -170,7 +159,6 @@ spec = do
 
   describe "numberFound" $ do
     it "returns the number of markets found" $ do
-      pending
       let (Right markets) = parseMarkets searchableJSON
       numberFound (T.pack "oo") markets `shouldBe` 2
       numberFound (T.pack "ar") markets `shouldBe` 2
@@ -178,7 +166,6 @@ spec = do
 
   describe "orderedNtoS" $ do
     it "returns the markets found, sorted from north to south" $ do
-      pending
       let (Right markets) = parseMarkets searchableJSON
 
       let [a, b] = orderedNtoS (T.pack "oo") markets

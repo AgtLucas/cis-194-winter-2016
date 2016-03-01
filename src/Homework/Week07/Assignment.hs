@@ -19,6 +19,7 @@ module Homework.Week07.Assignment (
 import Data.Aeson
 import Data.Monoid
 import GHC.Generics
+import Data.List
 
 import qualified Data.ByteString.Lazy.Char8 as B
 import qualified Data.Text as T
@@ -34,7 +35,7 @@ ynToBool x = x
 
 -- #2
 parseData :: B.ByteString -> Either String Value
-parseData = undefined
+parseData x = fmap ynToBool (eitherDecode x)
 
 -- #3
 data Market = Market { marketname :: T.Text
@@ -45,41 +46,54 @@ data Market = Market { marketname :: T.Text
 instance FromJSON Market
 
 parseMarkets :: B.ByteString -> Either String [Market]
-parseMarkets = undefined
+parseMarkets s = fmap ((\(Success a) -> a) . fromJSON) (parseData s)
 
 -- #4
 loadData :: IO [Market]
-loadData = undefined
+loadData = do
+  str <- B.readFile "markets.json"
+  return (either fail id (parseMarkets str))
 
 -- #5
 data OrdList a = OrdList { getOrdList :: [a] } deriving (Eq, Show)
 
 instance Ord a => Monoid (OrdList a) where
-  -- mempty = ???
-  -- mappend = ???
+  mempty = OrdList []
+  mappend (OrdList a) (OrdList b) = OrdList (sort $ a ++ b)
 
 -- #6
 type Searcher m = T.Text -> [Market] -> m
 
+-- Equivalent to:
+-- Monoid m => (Market -> m) -> T.Text -> [Market] -> m
 search :: Monoid m => (Market -> m) -> Searcher m
-search = undefined
+search f text markets = go markets
+  where go [] = mempty
+        go (x@(Market {marketname = name}):xs)
+          | T.isInfixOf text name = (f x) <> (go xs)
+          | otherwise = go xs
 
 -- #7
+safeHead :: [a] -> Maybe a
+safeHead [] = Nothing
+safeHead (x:_) = Just x
+
 firstFound :: Searcher (Maybe Market)
-firstFound = undefined
+firstFound text markets = safeHead $ allFound text markets
 
 -- #8
 lastFound :: Searcher (Maybe Market)
-lastFound = undefined
+lastFound text markets = safeHead . reverse $ allFound text markets
 
 -- #9
 allFound :: Searcher [Market]
-allFound = undefined
+allFound text markets = search (:[]) text markets
 
 -- #10
 numberFound :: Searcher Int
-numberFound = undefined
+numberFound text markets = length $ allFound text markets
 
 -- #11
 orderedNtoS :: Searcher [Market]
-orderedNtoS = undefined
+orderedNtoS text markets = sortOn (\a -> y a) $
+  allFound text markets
